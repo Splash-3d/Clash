@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neon Serpent Pro</title>
 <style>
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Poppins',sans-serif;background:#0f0c2a;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;color:white;}
 button{font-family:inherit;}
@@ -100,7 +99,7 @@ canvas{width:100%;height:100%;border-radius:20px;background:rgba(5,3,15,.8);box-
 <audio id="clickSound" src="https://freesound.org/data/previews/276/276031_5121236-lq.mp3"></audio>
 
 <script>
-// === CONFIGURACION ===
+// CONFIGURACION
 const colorPresets=[{name:'Cian',value:'#00dbde'},{name:'Magenta',value:'#fc00ff'},{name:'Lima',value:'#a4ff00'},{name:'Azul',value:'#00bfff'},{name:'Violeta',value:'#8a2be2'},{name:'Naranja',value:'#ff6b35'}];
 const foodTypes=[{icon:'🍎',color:'#ff2a6d'},{icon:'🍒',color:'#e53935'},{icon:'🍇',color:'#7e57c2'},{icon:'🍋',color:'#ffd600'},{icon:'🥝',color:'#8bc34a'},{icon:'🍑',color:'#ff9e80'}];
 const speedLevels=[{name:'Fácil',value:200},{name:'Medio',value:140},{name:'Difícil',value:100},{name:'Demencial',value:45}];
@@ -109,7 +108,7 @@ let selectedSnakeColor=colorPresets[0].value;
 let selectedFoodType=foodTypes[0];
 let selectedSpeed=speedLevels[1].value;
 
-// === ELEMENTOS ===
+// ELEMENTOS
 const canvas=document.getElementById('gameCanvas');
 const ctx=canvas.getContext('2d');
 const scoreEl=document.getElementById('score');
@@ -129,7 +128,7 @@ let snake=[],food={},direction='right',nextDirection='right',score=0,gameRunning
 const gridSize=20;
 let particles=[];
 
-// === INICIALIZAR OPCIONES ===
+// OPCIONES
 function createOptions(containerId){
   const container=document.getElementById(containerId);
   container.innerHTML='';
@@ -159,7 +158,7 @@ function setActive(containerId,index){
 }
 createOptions('colorOptionsSplash'); createOptions('foodOptionsSplash'); createOptions('speedOptionsSplash');
 
-// === INICIALIZAR JUEGO ===
+// INICIALIZAR JUEGO
 function initGame(){
   const cols=Math.floor(canvas.clientWidth/gridSize);
   const rows=Math.floor(canvas.clientHeight/gridSize);
@@ -196,7 +195,7 @@ function updateParticles(){
   particles=particles.filter(p=>p.life>0);
 }
 
-// === GAME LOOP ===
+// GAME LOOP
 function updateGame(){
   snake.forEach(seg=>{seg.prevX=seg.x; seg.prevY=seg.y;});
   direction=nextDirection;
@@ -221,9 +220,7 @@ function drawGame(timestamp){
   snake.forEach((seg,i)=>{
     const x=seg.prevX+(seg.x-seg.prevX)*t;
     const y=seg.prevY+(seg.y-seg.prevY)*t;
-    const progress=i/(snake.length-1);
-    const fade=1-progress*0.4;
-    ctx.fillStyle=selectedSnakeColor.replace(/.$/,`${fade})`.replace('rgb','rgba'));
+    ctx.fillStyle=selectedSnakeColor;
     ctx.beginPath();
     ctx.roundRect(x*gridSize+1,y*gridSize+1,gridSize-2,gridSize-2,5);
     ctx.fill();
@@ -242,7 +239,7 @@ function drawGame(timestamp){
 
 function gameLoop(timestamp){
   if(gameRunning){
-    if(timestamp-lastUpdateTime>selectedSpeed) {updateGame(); lastUpdateTime=timestamp;}
+    if(timestamp-lastUpdateTime>selectedSpeed){updateGame(); lastUpdateTime=timestamp;}
   }
   drawGame(timestamp);
   requestAnimationFrame(gameLoop);
@@ -250,7 +247,7 @@ function gameLoop(timestamp){
 
 function gameOver(){gameRunning=false; dieSound.currentTime=0; dieSound.play(); finalScoreEl.textContent=score; gameOverScreen.classList.add('active');}
 
-// === CONTROLES ===
+// CONTROLES
 document.addEventListener('keydown',e=>{
   const keyMap={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right','w':'up','s':'down','a':'left','d':'right'};
   if(gameRunning&&keyMap[e.key]){nextDirection=keyMap[e.key];}
@@ -265,13 +262,12 @@ if('ontouchstart' in window){
   });
 }
 
-// === BOTONES ===
+// BOTONES
 playBtn.addEventListener('click',()=>{clickSound.currentTime=0;clickSound.play();initGame();});
 restartBtn.addEventListener('click',()=>{clickSound.currentTime=0;clickSound.play();initGame();});
 
-// === INICIO ===
+// INICIO
 requestAnimationFrame(gameLoop);
 </script>
-
 </body>
 </html>
