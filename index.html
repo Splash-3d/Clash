@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neon Serpent Pro</title>
 <style>
+/* Reset y estilos básicos */
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Poppins',sans-serif;background:#0f0c2a;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;color:white;}
-button{font-family:inherit;}
+body{font-family:'Poppins',sans-serif;background:#0f0c2a;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;color:white;}
+button{font-family:inherit;cursor:pointer;border:none;}
 
 /* SPLASH SCREEN */
 #splash{
@@ -27,10 +28,19 @@ button{font-family:inherit;}
 @keyframes logo-bounce{0%{transform:translateY(0);}100%{transform:translateY(-10px);}}
 #playBtn{
   background:linear-gradient(90deg,#00dbde,#fc00ff);
-  padding:15px 40px;border-radius:50px;font-size:1.2rem;font-weight:600;border:none;
-  color:white; cursor:pointer; box-shadow:0 5px 15px rgba(0,219,222,.6); transition:transform .2s,box-shadow .2s;
+  padding:15px 40px;border-radius:50px;font-size:1.2rem;font-weight:600;
+  color:white;box-shadow:0 5px 15px rgba(0,219,222,.6);transition:transform .2s,box-shadow .2s;
 }
 #playBtn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,219,222,.8);}
+
+/* CONFIG PANEL SPLASH */
+.config-row{display:flex;justify-content:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.config-panel{background:rgba(15,10,40,.6);backdrop-filter:blur(8px);border-radius:14px;padding:10px 8px;flex:1;min-width:100px;border:1px solid rgba(100,100,255,0.2);box-shadow:0 0 12px rgba(0,219,222,.12);}
+.panel-title{font-size:0.85rem;color:#8a8aff;margin-bottom:6px;text-align:center;font-weight:600;}
+.options{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;}
+.option-item{width:32px;height:32px;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;border:2px solid transparent;font-size:1rem;transition:transform .15s;user-select:none;font-weight:600;}
+.option-item.speed{border-radius:8px;width:auto;padding:0 6px;font-size:0.75rem;}
+.option-item.active{border-color:white;transform:scale(1.15);}
 
 /* CANVAS */
 #gameContainer{position:relative;width:100%;max-width:480px;aspect-ratio:1/1;}
@@ -49,21 +59,16 @@ canvas{width:100%;height:100%;border-radius:20px;background:rgba(5,3,15,.8);box-
 #gameOver.active{opacity:1;pointer-events:all;}
 #gameOver h2{font-size:2.2rem;background:linear-gradient(90deg,#00dbde,#fc00ff);-webkit-background-clip:text;color:transparent;margin-bottom:1rem;}
 #finalScore{font-size:1.5rem;margin-bottom:2rem;}
-#restartBtn{background:linear-gradient(90deg,#00dbde,#fc00ff);padding:12px 36px;border-radius:50px;font-size:1.1rem;font-weight:600;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,219,222,.6);transition:transform .2s,box-shadow .2s;}
+#restartBtn{background:linear-gradient(90deg,#00dbde,#fc00ff);padding:12px 36px;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,219,222,.6);transition:transform .2s,box-shadow .2s;}
 #restartBtn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,219,222,.8);}
 
-/* CONFIG PANEL */
-.config-row{display:flex;justify-content:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
-.config-panel{background:rgba(15,10,40,.6);backdrop-filter:blur(8px);border-radius:14px;padding:10px 8px;flex:1;min-width:100px;border:1px solid rgba(100,100,255,0.2);box-shadow:0 0 12px rgba(0,219,222,.12);}
-.panel-title{font-size:0.85rem;color:#8a8aff;margin-bottom:6px;text-align:center;font-weight:600;}
-.options{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;}
-.option-item{width:32px;height:32px;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;border:2px solid transparent;font-size:1rem;transition:transform .15s;user-select:none;font-weight:600;}
-.option-item.speed{border-radius:8px;width:auto;padding:0 6px;font-size:0.75rem;}
-.option-item.active{border-color:white;transform:scale(1.15);}
+/* PARTICULAS */
+.particle{position:absolute;width:4px;height:4px;border-radius:50%;background:#00dbde;pointer-events:none;}
 </style>
 </head>
 <body>
 
+<!-- SPLASH -->
 <div id="splash">
   <div id="logo">NEON SERPENT</div>
   <div class="config-row" style="margin-bottom:1.5rem;">
@@ -79,10 +84,15 @@ canvas{width:100%;height:100%;border-radius:20px;background:rgba(5,3,15,.8);box-
       <div class="panel-title">VELOCIDAD</div>
       <div class="options" id="speedOptionsSplash"></div>
     </div>
+    <div class="config-panel">
+      <div class="panel-title">TAMAÑO</div>
+      <div class="options" id="sizeOptionsSplash"></div>
+    </div>
   </div>
   <button id="playBtn">JUGAR</button>
 </div>
 
+<!-- GAME -->
 <div id="gameContainer">
   <canvas id="gameCanvas"></canvas>
   <div id="score">0</div>
@@ -97,16 +107,19 @@ canvas{width:100%;height:100%;border-radius:20px;background:rgba(5,3,15,.8);box-
 <audio id="eatSound" src="https://freesound.org/data/previews/341/341695_6246270-lq.mp3"></audio>
 <audio id="dieSound" src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3"></audio>
 <audio id="clickSound" src="https://freesound.org/data/previews/276/276031_5121236-lq.mp3"></audio>
+<audio id="bgMusic" src="https://freesound.org/data/previews/531/531221_5121236-lq.mp3" loop></audio>
 
 <script>
 // CONFIGURACION
 const colorPresets=[{name:'Cian',value:'#00dbde'},{name:'Magenta',value:'#fc00ff'},{name:'Lima',value:'#a4ff00'},{name:'Azul',value:'#00bfff'},{name:'Violeta',value:'#8a2be2'},{name:'Naranja',value:'#ff6b35'}];
 const foodTypes=[{icon:'🍎',color:'#ff2a6d'},{icon:'🍒',color:'#e53935'},{icon:'🍇',color:'#7e57c2'},{icon:'🍋',color:'#ffd600'},{icon:'🥝',color:'#8bc34a'},{icon:'🍑',color:'#ff9e80'}];
 const speedLevels=[{name:'Fácil',value:200},{name:'Medio',value:140},{name:'Difícil',value:100},{name:'Demencial',value:45}];
+const sizeLevels=[{name:'Pequeño',value:16},{name:'Medio',value:20},{name:'Grande',value:24}];
 
 let selectedSnakeColor=colorPresets[0].value;
 let selectedFoodType=foodTypes[0];
 let selectedSpeed=speedLevels[1].value;
+let selectedSize=sizeLevels[1].value;
 
 // ELEMENTOS
 const canvas=document.getElementById('gameCanvas');
@@ -122,61 +135,56 @@ const restartBtn=document.getElementById('restartBtn');
 const eatSound=document.getElementById('eatSound');
 const dieSound=document.getElementById('dieSound');
 const clickSound=document.getElementById('clickSound');
-eatSound.volume=0.2; dieSound.volume=0.2; clickSound.volume=0.2;
+const bgMusic=document.getElementById('bgMusic');
+eatSound.volume=0.2; dieSound.volume=0.2; clickSound.volume=0.2; bgMusic.volume=0.15;
 
 let snake=[],food={},direction='right',nextDirection='right',score=0,gameRunning=false,lastUpdateTime=0;
-const gridSize=20;
-let particles=[];
+let particles=[],backgroundParticles=[];
 
-// OPCIONES
-function createOptions(containerId){
+// PARTICULAS DE FONDO
+for(let i=0;i<40;i++){backgroundParticles.push({x:Math.random(),y:Math.random(),dx:(Math.random()-0.5)*0.002,dy:(Math.random()-0.5)*0.002,size:Math.random()*2+1});}
+
+// FUNCIONES OPCIONES
+function createOptions(containerId,optionsArray,selectedVar,callback){
   const container=document.getElementById(containerId);
   container.innerHTML='';
-  if(containerId.includes('color')){
-    colorPresets.forEach((c,i)=>{
-      const el=document.createElement('div'); el.className='option-item color'; el.style.backgroundColor=c.value;
-      el.addEventListener('click',()=>{selectedSnakeColor=c.value; setActive(containerId,i);});
-      container.appendChild(el);
+  optionsArray.forEach((opt,i)=>{
+    const el=document.createElement('div');
+    el.className='option-item';
+    if(containerId.includes('color')){el.style.backgroundColor=opt.value;}
+    else if(containerId.includes('food')){el.textContent=opt.icon;}
+    else{el.textContent=opt.name;}
+    el.addEventListener('click',()=>{
+      window[selectedVar]=opt.value||opt; // Asignar seleccionado
+      [...container.children].forEach((e,j)=>e.classList.toggle('active',i===j));
     });
-  } else if(containerId.includes('food')){
-    foodTypes.forEach((f,i)=>{
-      const el=document.createElement('div'); el.className='option-item'; el.textContent=f.icon;
-      el.addEventListener('click',()=>{selectedFoodType=f; setActive(containerId,i);});
-      container.appendChild(el);
-    });
-  } else if(containerId.includes('speed')){
-    speedLevels.forEach((s,i)=>{
-      const el=document.createElement('div'); el.className='option-item speed'; el.textContent=s.name;
-      el.addEventListener('click',()=>{selectedSpeed=s.value; setActive(containerId,i);});
-      container.appendChild(el);
-    });
-  }
+    if(i===0) el.classList.add('active');
+    container.appendChild(el);
+  });
 }
-function setActive(containerId,index){
-  const container=document.getElementById(containerId);
-  [...container.children].forEach((el,i)=>{el.classList.toggle('active',i===index);});
-}
-createOptions('colorOptionsSplash'); createOptions('foodOptionsSplash'); createOptions('speedOptionsSplash');
+
+createOptions('colorOptionsSplash',colorPresets,'selectedSnakeColor');
+createOptions('foodOptionsSplash',foodTypes,'selectedFoodType');
+createOptions('speedOptionsSplash',speedLevels,'selectedSpeed');
+createOptions('sizeOptionsSplash',sizeLevels,'selectedSize');
 
 // INICIALIZAR JUEGO
 function initGame(){
-  const cols=Math.floor(canvas.clientWidth/gridSize);
-  const rows=Math.floor(canvas.clientHeight/gridSize);
+  const cols=Math.floor(canvas.clientWidth/selectedSize);
+  const rows=Math.floor(canvas.clientHeight/selectedSize);
   snake=[{x:Math.floor(cols/2),y:Math.floor(rows/2),prevX:Math.floor(cols/2),prevY:Math.floor(rows/2)}];
   for(let i=1;i<3;i++){snake.push({x:snake[0].x-i,y:snake[0].y,prevX:snake[0].x-i,prevY:snake[0].y});}
-  direction='right'; nextDirection='right'; score=0;
-  scoreEl.textContent=score;
-  generateFood();
+  direction='right'; nextDirection='right'; score=0; scoreEl.textContent=score;
+  generateFood(cols,rows);
   particles=[];
   gameRunning=true;
   lastUpdateTime=performance.now();
   splash.classList.add('hidden');
   gameOverScreen.classList.remove('active');
+  bgMusic.currentTime=0; bgMusic.play();
 }
 
-function generateFood(){
-  const cols=Math.floor(canvas.clientWidth/gridSize);
-  const rows=Math.floor(canvas.clientHeight/gridSize);
+function generateFood(cols,rows){
   let valid=false;
   while(!valid){
     food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};
@@ -184,59 +192,70 @@ function generateFood(){
   }
 }
 
+// PARTICULAS
 function spawnParticles(x,y){
   for(let i=0;i<8;i++){
     particles.push({x:x+0.5,y:y+0.5,dx:(Math.random()-0.5)*0.6,dy:(Math.random()-0.5)*0.6,life:20});
   }
 }
-
 function updateParticles(){
-  particles.forEach(p=>{p.x+=p.dx; p.y+=p.dy; p.life--;});
+  particles.forEach(p=>{p.x+=p.dx;p.y+=p.dy;p.life--;});
   particles=particles.filter(p=>p.life>0);
 }
 
 // GAME LOOP
 function updateGame(){
-  snake.forEach(seg=>{seg.prevX=seg.x; seg.prevY=seg.y;});
+  const cols=Math.floor(canvas.clientWidth/selectedSize);
+  const rows=Math.floor(canvas.clientHeight/selectedSize);
+  snake.forEach(seg=>{seg.prevX=seg.x;seg.prevY=seg.y;});
   direction=nextDirection;
   const head={...snake[0]};
   switch(direction){case'up':head.y--;break;case'down':head.y++;break;case'left':head.x--;break;case'right':head.x++;break;}
-  if(head.x<0||head.y<0||head.x>=Math.floor(canvas.clientWidth/gridSize)||head.y>=Math.floor(canvas.clientHeight/gridSize)||snake.some(seg=>seg.x===head.x&&seg.y===head.y)){
-    gameOver(); return;
-  }
+  if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(seg=>seg.x===head.x&&seg.y===head.y)){gameOver(); return;}
   snake.unshift(head);
   if(head.x===food.x&&head.y===food.y){
-    score+=10; scoreEl.textContent=score;
-    spawnParticles(food.x,food.y); eatSound.currentTime=0; eatSound.play();
-    generateFood();
-  } else {snake.pop();}
+    score+=10; scoreEl.textContent=score; spawnParticles(food.x,food.y); eatSound.currentTime=0; eatSound.play();
+    generateFood(cols,rows);
+  }else{snake.pop();}
   updateParticles();
 }
 
+// DRAW
 function drawGame(timestamp){
   const t=Math.min((timestamp-lastUpdateTime)/selectedSpeed,1);
   ctx.fillStyle='rgba(5,3,15,.8)'; ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);
-  // dibujar serpiente
+
+  // Particulas de fondo
+  backgroundParticles.forEach(p=>{
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x<0)p.x=1;if(p.x>1)p.x=0;if(p.y<0)p.y=1;if(p.y>1)p.y=0;
+    ctx.fillStyle='rgba(0,219,222,0.5)'; ctx.beginPath();
+    ctx.arc(p.x*canvas.clientWidth,p.y*canvas.clientHeight,p.size,0,Math.PI*2); ctx.fill();
+  });
+
+  // Serpiente
   snake.forEach((seg,i)=>{
     const x=seg.prevX+(seg.x-seg.prevX)*t;
     const y=seg.prevY+(seg.y-seg.prevY)*t;
     ctx.fillStyle=selectedSnakeColor;
-    ctx.beginPath();
-    ctx.roundRect(x*gridSize+1,y*gridSize+1,gridSize-2,gridSize-2,5);
-    ctx.fill();
+    ctx.shadowColor=selectedSnakeColor; ctx.shadowBlur=10*(i/snake.length);
+    ctx.beginPath(); ctx.roundRect(x*selectedSize+1,y*selectedSize+1,selectedSize-2,selectedSize-2,5); ctx.fill();
   });
-  // dibujar comida
-  ctx.font=`${gridSize-4}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.shadowBlur=0;
+
+  // Comida
+  ctx.font=`${selectedSize-4}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillStyle=selectedFoodType.color;
-  ctx.fillText(selectedFoodType.icon,food.x*gridSize+gridSize/2,food.y*gridSize+gridSize/2);
-  // partículas
+  ctx.fillText(selectedFoodType.icon,food.x*selectedSize+selectedSize/2,food.y*selectedSize+selectedSize/2);
+
+  // Partículas al comer
   particles.forEach(p=>{
     ctx.fillStyle=`rgba(255,255,255,${p.life/20})`;
-    ctx.beginPath();
-    ctx.arc(p.x*gridSize,p.y*gridSize,2,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x*selectedSize,p.y*selectedSize,2,0,Math.PI*2); ctx.fill();
   });
 }
 
+// LOOP
 function gameLoop(timestamp){
   if(gameRunning){
     if(timestamp-lastUpdateTime>selectedSpeed){updateGame(); lastUpdateTime=timestamp;}
@@ -245,7 +264,8 @@ function gameLoop(timestamp){
   requestAnimationFrame(gameLoop);
 }
 
-function gameOver(){gameRunning=false; dieSound.currentTime=0; dieSound.play(); finalScoreEl.textContent=score; gameOverScreen.classList.add('active');}
+// GAME OVER
+function gameOver(){gameRunning=false; dieSound.currentTime=0; dieSound.play(); finalScoreEl.textContent=score; gameOverScreen.classList.add('active'); bgMusic.pause();}
 
 // CONTROLES
 document.addEventListener('keydown',e=>{
@@ -263,8 +283,8 @@ if('ontouchstart' in window){
 }
 
 // BOTONES
-playBtn.addEventListener('click',()=>{clickSound.currentTime=0;clickSound.play();initGame();});
-restartBtn.addEventListener('click',()=>{clickSound.currentTime=0;clickSound.play();initGame();});
+playBtn.addEventListener('click',()=>{clickSound.currentTime=0; clickSound.play(); initGame();});
+restartBtn.addEventListener('click',()=>{clickSound.currentTime=0; clickSound.play(); initGame();});
 
 // INICIO
 requestAnimationFrame(gameLoop);
